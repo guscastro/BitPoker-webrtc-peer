@@ -92,6 +92,7 @@ function wireUpDataChannel(peer) {
   };
 
   peer.dataChannel.onmessage = function (message) {
-    peer.messageListeners.forEach(listener => listener(message));
+    let parsedMessage = JSON.parse(message);
+    peer.messageListeners.forEach(listener => listener(parsedMessage));
   };
 }

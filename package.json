@@ -1,12 +1,14 @@
 {
-  "name": "bitpoker-webrtc-plain-client",
+  "name": "bitpoker-webrtc-client",
   "version": "1.0.0",
   "description": "BitPoker WebRTC plain text client",
   "main": "index.js",
   "scripts": {
     "start": "python -mSimpleHTTPServer",
     "build": "webpack --config webpack.config.dev.js",
-    "build:watch": "webpack --config webpack.config.dev.js --watch"
+    "build:watch": "webpack --config webpack.config.dev.js --watch",
+    "test": "mocha --compilers js:babel/register --recursive",
+    "test:watch": "npm test -- --watch"
   },
   "author": "Gustavo Castro <gustavo.bagdadidecastro@gmail.com",
   "license": "ISC",
