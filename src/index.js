@@ -1,4 +1,3 @@
-import './webrtc-adapter';
 import {createSession, joinSession} from './RTCDataChannel';
 
 let input = document.createElement('textarea');

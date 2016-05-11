@@ -17,11 +17,10 @@ module.exports = {
   module: {
     loaders: [
       {
-        test: /\.jsx?$/,
-        loaders: ['babel'],
+        test: /\.js?$/,
+        loaders: ['babel', 'eslint-loader'],
         include: path.join(__dirname, 'src')
-      },
-      {test: /\.(png|jpg)$/, loader: 'url-loader?limit=8192'}
+      }
     ]
   }
 };
