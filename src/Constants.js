@@ -10,7 +10,7 @@ export const PokerMessageTypes = {
 	FOLD: 'FOLD'
 }
 
-export const Ranks {
+export const Ranks = {
 	TWO: '2',
 	THREE: '3',
 	FOUR: '4',
@@ -26,7 +26,7 @@ export const Ranks {
 	ACE: 'A'	
 }
 
-export const Suits {
+export const Suits = {
 	CLUBS: 'C',
 	DIAMONDS: 'D',
 	HEARTS: 'H',

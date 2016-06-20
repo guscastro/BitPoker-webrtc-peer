@@ -1,7 +1,7 @@
 import { PokerMessageTypes } from './Constants';
 import RTCDataChannel from './RTCDataChannel';
 import createDeck from './createDeck';
-import shuffleArray from './common/shuffleArray';
+import shuffleArray from './common/arrayShuffle';
 
 const NUMBER_HOLE_CARDS = 2;
 
@@ -71,33 +71,32 @@ export function getHoleCards(gameSession) {
 	};
 
 	const isDealer = gameSession.state.dealerPosition === gameSession.state.myPosition;
-	let resolver;
-	let promise = new Promise((resolve, reject) => resolver = resolve);
-	// todo meeeeh
-	if (isDealer) {
-		deck = createDeck();
-		shuffleArray(deck);
-		sendShuffledDeckMessage(gameSession, deck);
-		waitOnMessage(gameSession, PokerMessageTypes.SHUFFLED_DECK)
-		.then(function shuffledDeckReceived(message) {
-			deck = message.data;
-			let holeCards = getHoleCardsFromShuffledDeck(gameSession, deck);
-			gameSession.state.deck = deck;
-			resolver(holeCards);
-		});
-	} else {
-		waitOnMessage(gameSession, PokerMessageTypes.SHUFFLED_DECK)
-		.then(function shuffledDeckReceived(message) {
-			deck = message.data;
+
+	return new Promise(resolve => {
+		// todo meeeeh
+		if (isDealer) {
+			deck = createDeck();
 			shuffleArray(deck);
 			sendShuffledDeckMessage(gameSession, deck);
-			let holeCards = getHoleCardsFromShuffledDeck(gameSession, deck);
-			gameSession.state.deck = deck;
-			resolver(holeCards);
-		});
-	}
-
-	return promise;
+			waitOnMessage(gameSession, PokerMessageTypes.SHUFFLED_DECK)
+			.then(function shuffledDeckReceived(message) {
+				deck = message.data;
+				let holeCards = getHoleCardsFromShuffledDeck(gameSession, deck);
+				gameSession.state.deck = deck;
+				resolver(holeCards);
+			});
+		} else {
+			waitOnMessage(gameSession, PokerMessageTypes.SHUFFLED_DECK)
+			.then(function shuffledDeckReceived(message) {
+				deck = message.data;
+				shuffleArray(deck);
+				sendShuffledDeckMessage(gameSession, deck);
+				let holeCards = getHoleCardsFromShuffledDeck(gameSession, deck);
+				gameSession.state.deck = deck;
+				resolver(holeCards);
+			});
+		}
+	});
 }
 
 export function getFlop(gameSession) {

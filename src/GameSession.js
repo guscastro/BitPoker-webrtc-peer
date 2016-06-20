@@ -1,4 +1,3 @@
-import { BlindTypes } from './Blind';
 import RTCDataChannelBufferedListener from './RTCDataChannelBufferedListener';
 
 export default class GameSession {

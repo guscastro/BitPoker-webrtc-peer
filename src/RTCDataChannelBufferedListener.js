@@ -1,6 +1,6 @@
 import arrayRemove from './common/arrayRemove';
 
-class RTCDataChannelBufferedListener {
+export default class RTCDataChannelBufferedListener {
   constructor(channel) {
     this.channel = channel;
     this.buffer = [];
@@ -13,35 +13,30 @@ class RTCDataChannelBufferedListener {
     });
   }
 
-  receiveMessage(selector = () => return true) {
-    let findMessages = () => {
-      let messages = this.buffer.filter(selector);
+  receiveMessage(selector) {
+    const findMessages = () => {
+      const messages = this.buffer.filter(selector);
       messages.forEach(message => {
         arrayRemove(this.buffer, message);
       });
       return messages;
     };
-    
-    let resolve;
-    let promise = new Promise((res) => {
-      resolve = res;
+
+    return new Promise(resolve => {
+      const messages = findMessages();
+
+      if (messages.length) {
+        resolve(messages);
+      } else {
+        const listener = () => {
+          const messages = findMessages();
+          if (messages.length) {
+            arrayRemove(this.$$listeners, listener);
+            resolve(messages);
+          }
+        };
+        this.$$listeners.push(listener);
+      }
     });
-
-    let messages = findMessages();
-
-    if (messages.length) {
-      resolve(messages);
-    } else {
-      let listener = () => {
-        let messages = findMessages();
-        if (messages.length) {
-          arrayRemove(this.$$listeners, listener);
-          resolve(messages);
-        }
-      };
-      this.$$listeners.push(listener);
-    }
-
-    return promise;
   }
 }

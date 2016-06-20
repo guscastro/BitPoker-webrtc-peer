@@ -37,7 +37,7 @@ export function joinSession(remoteSessionDescription) {
   return promise;
 }
 
-class RTCDataChannel {
+export class RTCDataChannel {
   constructor() {
     let self = this;
     this.connection = new RTCPeerConnection(rtcConfiguration, rtcAdditionalConfiguration);
@@ -59,19 +59,16 @@ class RTCDataChannel {
 }
 
 function onicecandidatePromise(peer) {
-  let resolver;
-  let promise = new Promise((resolve, reject) => resolver = resolve);
-
-  peer.connection.onicecandidate = function (e) {
-    if (e.candidate == null) {
-      resolver({
-        peer,
-        description: peer.connection.localDescription
-      });
-    }
-  };
-
-  return promise;
+  return new Promise(resolve => {
+    peer.connection.onicecandidate = function (e) {
+      if (e.candidate == null) {
+        resolve({
+          peer,
+          description: peer.connection.localDescription
+        });
+      }
+    };
+  });
 }
 
 function createDataChannel(peer) {
