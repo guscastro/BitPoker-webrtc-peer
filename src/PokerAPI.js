@@ -1,7 +1,7 @@
 import { PokerMessageTypes } from './Constants';
 import RTCDataChannel from './RTCDataChannel';
 import createDeck from './createDeck';
-import shuffleArray from './common/arrayShuffle';
+import { shuffleDeck } from './DeckUtils';
 
 const NUMBER_HOLE_CARDS = 2;
 
@@ -51,49 +51,35 @@ export function fold(gameSession) {
 	return gameSession.dataChannel.send(message);
 }
 
-function sendShuffledDeckMessage(gameSession, deck) {
-	let message = {
-		type: PokerMessageTypes.SHUFFLED_DECK,
-		data: deck
-	};
-	sendMessage(gameSession, message);
-}
-
-function getHoleCardsFromShuffledDeck(gameSession, deck) {
-	let playerPosition = gameSession.state.myPosition;
-	let offset = playerPosition * NUMBER_HOLE_CARDS;
-	return deck.slice(offset, NUMBER_HOLE_CARDS);
-}
-
 export function getHoleCards(gameSession) {
 	let message = {
 		type: PokerMessageTypes
 	};
 
-	const isDealer = gameSession.state.dealerPosition === gameSession.state.myPosition;
+	const isDealer = gameSession.state.dealerPosition === gameSession.state.playerPosition;
 
 	return new Promise(resolve => {
 		// todo meeeeh
 		if (isDealer) {
-			deck = createDeck();
-			shuffleArray(deck);
+			let deck = createDeck();
+			shuffleDeck(deck);
 			sendShuffledDeckMessage(gameSession, deck);
 			waitOnMessage(gameSession, PokerMessageTypes.SHUFFLED_DECK)
 			.then(function shuffledDeckReceived(message) {
 				deck = message.data;
 				let holeCards = getHoleCardsFromShuffledDeck(gameSession, deck);
 				gameSession.state.deck = deck;
-				resolver(holeCards);
+				resolve(holeCards);
 			});
 		} else {
 			waitOnMessage(gameSession, PokerMessageTypes.SHUFFLED_DECK)
 			.then(function shuffledDeckReceived(message) {
-				deck = message.data;
-				shuffleArray(deck);
+				let deck = message.data;
+				shuffleDeck(deck);
 				sendShuffledDeckMessage(gameSession, deck);
 				let holeCards = getHoleCardsFromShuffledDeck(gameSession, deck);
 				gameSession.state.deck = deck;
-				resolver(holeCards);
+				resolve(holeCards);
 			});
 		}
 	});
@@ -109,4 +95,18 @@ export function getTurn(gameSession) {
 
 export function getRiver(gameSession) {
 
+}
+
+function sendShuffledDeckMessage(gameSession, deck) {
+	let message = {
+		type: PokerMessageTypes.SHUFFLED_DECK,
+		data: deck
+	};
+	gameSession.dataChannel.sendMessage(message);
+}
+
+function getHoleCardsFromShuffledDeck(gameSession, deck) {
+	let playerPosition = gameSession.state.myPosition;
+	let offset = playerPosition * NUMBER_HOLE_CARDS;
+	return deck.slice(offset, NUMBER_HOLE_CARDS);
 }

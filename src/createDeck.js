@@ -8,4 +8,6 @@ export default function createDeck() {
 			deck.push({ suit, rank });
 		}
 	}
+
+	return deck;
 }

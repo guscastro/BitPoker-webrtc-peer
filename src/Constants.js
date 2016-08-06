@@ -28,7 +28,7 @@ export const Ranks = {
 
 export const Suits = {
 	CLUBS: 'C',
-	DIAMONDS: 'D',
+	SPADES: 'S',
 	HEARTS: 'H',
 	DIAMONDS: 'D'
 }

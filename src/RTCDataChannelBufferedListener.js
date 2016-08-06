@@ -1,4 +1,4 @@
-import arrayRemove from './common/arrayRemove';
+import { arrayRemove } from './common/ArrayUtils';
 
 export default class RTCDataChannelBufferedListener {
   constructor(channel) {
